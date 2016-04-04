@@ -1,0 +1,3 @@
+[submodule "ext/IHaskell"]
+    path = ext/IHaskell
+    url = https://github.com/silky/IHaskell.git
