@@ -1,6 +1,7 @@
 module Control.Dashboard where
 
 import Data.Time
+import Control.Concurrent.Async
 import Network.Wreq
 import Control.Monad (when)
 import Control.Exception.Enclosed (catchAny)
@@ -46,7 +47,7 @@ nonzeroPrs deets team = do
     rs  <- repoList deets team 1
 
     -- For all the repos, find the PRs.
-    prs <- mapM (\x -> let [a,b] = T.splitOn "/" x in getPrs 5 deets a b) rs
+    prs <- mapConcurrently (\x -> let [a,b] = T.splitOn "/" x in (getPrs 5 deets a b)) rs
 
     let t = zipWith (\x y -> (last (T.splitOn "/" x), length y)) rs prs
         nonzero = filter (\(_, y) -> y > 0) t
@@ -95,7 +96,6 @@ getPrs tries deets team repoId =
         --
         -- Pull out the "title" field.
         --
-        putStrLn $ "Getting PRs for: " ++ (show repoId)
         let vs = (prs ^.. responseBody .  key "values" . _Array . traverse)
 
         return $ map (\x -> (repoId, 

@@ -23,6 +23,7 @@ dependencies:
   - Chart-cairo
   - time
   - enclosed-exceptions
+  - async
 
 library:
   source-dirs: src
